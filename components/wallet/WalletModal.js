@@ -10,16 +10,20 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import React from "react";
-import ConnectButton from "./ConnectButton";
 import Disclaimer from "./Disclaimer";
 import { useWeb3React } from "@web3-react/core";
 import { injected, walletconnect } from "./Connectors";
 
-function WalletModal(props) {
+// const ChainId = () => {
+//   const chainId = useChainId();
+
+//   return chainId;
+// };
+
+const WalletModal = (props) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const { active, account, library, connector, activate, deactivate } =
-    useWeb3React();
+  const { active, account, chainId, activate, deactivate } = useWeb3React();
 
   async function connectInjected() {
     try {
@@ -47,7 +51,9 @@ function WalletModal(props) {
 
   return (
     <>
-      <Button colorScheme="pink" size="lg" variant="outline" onClick={onOpen} />
+      <Button colorScheme="pink" size="lg" variant="outline" onClick={onOpen}>
+        Connect Wallet
+      </Button>
       <Modal isOpen={isOpen} onClose={onClose} borderRadius="2xl">
         <ModalOverlay />
         <ModalContent>
@@ -55,15 +61,22 @@ function WalletModal(props) {
           <Disclaimer />
           <ModalCloseButton />
           <ModalBody display="grid" gap={2}>
-            <Button onClick={connectInjected}>MetaMask</Button>
-            <Button onClick={connectWalletConnect}>Wallet Connect</Button>
-            {/* <Button onClick={disconnect}>Disconnect</Button> */}
+            {!active && !account ? (
+              <>
+                <Button onClick={connectInjected}>MetaMask</Button>
+                <Button onClick={connectWalletConnect}>Wallet Connect</Button>
+              </>
+            ) : (
+              <Button onClick={disconnect}>Disconnect</Button>
+            )}
           </ModalBody>
-          <ModalFooter></ModalFooter>
+          <ModalFooter>
+            {active && `Connected ${account} on ${chainId}`}
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </>
   );
-}
+};
 
 export default WalletModal;
